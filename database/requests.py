@@ -130,15 +130,15 @@ async def get_count_executed_dz()-> int:
         count_dz_to_check: int = 0
         for elem in list_dz:
             if (elem.executed_dz != '' or elem.comment_executed_dz != '') and elem.checked_dz == '':
-                logging.info(f" elem.executed_dz = {elem.executed_dz} --- elem.comment_executed_dz = {elem.comment_executed_dz} --- elem.checked_dz = {elem.checked_dz}")
+                #logging.info(f" elem.executed_dz = {elem.executed_dz} --- elem.comment_executed_dz = {elem.comment_executed_dz} --- elem.checked_dz = {elem.checked_dz}")
                 count_dz_to_check += 1
-                logging.info(f" count_dz_to_check {count_dz_to_check}")
+                #logging.info(f" count_dz_to_check {count_dz_to_check}")
 
         #list_for_example = [elem for elem in await session.scalars(select(RelationLernersContent).where(RelationLernersContent.executed_dz != '',
         #                                                                     RelationLernersContent.checked_dz != ''))]
 
         #logging.info(f'list_for_example = {list_for_example}')
-        logging.info(f'data_dz = {data_dz} ------- list_dz = {list_dz}')
+       # logging.info(f'data_dz = {data_dz} ------- list_dz = {list_dz}')
         #count_dz_to_check = len(list_dz)
         return count_dz_to_check
 
@@ -152,7 +152,7 @@ async def get_dz_to_executed()-> list:
         list_return: list = []
         for elem in list_dz:
             if (elem.executed_dz != '' or elem.comment_executed_dz != '') and elem.checked_dz == '':
-                logging.info(f" elem.executed_dz = {elem.executed_dz} --- elem.comment_executed_dz = {elem.comment_executed_dz} --- elem.checked_dz = {elem.checked_dz}")
+                #logging.info(f" elem.executed_dz = {elem.executed_dz} --- elem.comment_executed_dz = {elem.comment_executed_dz} --- elem.checked_dz = {elem.checked_dz}")
                 list_return.append(elem)
         return list_return
 

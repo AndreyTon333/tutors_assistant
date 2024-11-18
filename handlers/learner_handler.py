@@ -1,19 +1,12 @@
 from aiogram import F, Router, Bot
-
-from aiogram.filters import Command, CommandStart, StateFilter
 from aiogram.types import Message, CallbackQuery
-from aiogram.fsm.state import State, default_state, StatesGroup
+from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import ReplyKeyboardRemove
 from config_data.config import Config, load_config
-
-from handlers.handler_add_dz import process_hello_admin
-
 
 import keyboards.keyboards as kb
 import database.requests as rq
-
 
 router = Router()
 
@@ -25,18 +18,21 @@ import random
 
 class LearnerFSM(StatesGroup):
     state_send_dz = State()
-    #state_fio = State()
 
 
 @router.message(F.text == 'Мои ДЗ')
-async def process_press_button_moi_dz(message:Message, bot:Bot):
+async def process_press_button_moi_dz(message:Message, bot:Bot, state: FSMContext):
     """Срабатывает на reply кнопку 'Мои ДЗ'"""
     logging.info('process_press_button_moi_dz')
 
-    await bot.delete_message(chat_id=message.chat.id,
-                             message_id=message.message_id)
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
-
+    if 'first_message' not in await state.get_data():
+        try:
+            await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
+        except:
+            pass
+    await state.clear()
     # чтобы показать клавиатуру с названиями ДЗ, надо сформировать список с ДЗ из выбранного раздела
     list_dz = [dz for dz in await rq.get_dz_from_learner(tg_id_learner=message.chat.id)]
     ###list_dz_sorted = list_dz.sort(key=)
@@ -131,6 +127,10 @@ async def process_take_dz_from_learner(clb: CallbackQuery, bot: Bot):
     """Срабатывает на inline кнопку выбранного ДЗ"""
     logging.info(f'process_take_dz_from_learner --- clb.data = {clb.data}')
 
+    await bot.delete_message(
+        chat_id=clb.message.chat.id,
+        message_id=clb.message.message_id
+    )
     tg_id = clb.message.chat.id
     id_content = clb.data.split('!')[-2]
     id_relation = clb.data.split('!')[-1]
@@ -253,8 +253,14 @@ async def process_press_button_send_dz(message:Message, bot:Bot, state: FSMConte
     """Срабатывает на reply кнопку 'Отправить ДЗ на проверку'"""
     logging.info('process_press_button_send_dz')
 
-    await bot.delete_message(chat_id=message.chat.id,
-                             message_id=message.message_id)
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+
+    if 'first_message' not in await state.get_data():
+        try:
+            await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
+        except:
+            pass
+    await state.clear()
 
     #### Сделать проверку на наличие невыполненного ДЗ. Если нет - return. Если есть,
     ### то показать список ДЗ на которое надо ответить отправкой ДЗ
@@ -298,7 +304,10 @@ async def process_set_state_send_execute_dz(clb: CallbackQuery, state: FSMContex
     # из колбэка сохранить id таблицы Relation, чтобы знать на какое ДЗ отвечают
     id_relation = clb.data.split('!')[-1]
     await state.update_data(id_relation=id_relation) #сохранение id таблицы relation
-
+    await bot.delete_message(
+        chat_id=clb.message.chat.id,
+        message_id=clb.message.message_id
+    )
     # переход в состояние ожидания контента
     await state.set_state(state=LearnerFSM.state_send_dz)
     await clb.message.answer(
@@ -380,6 +389,10 @@ async def process_send_executed_dz_add_dz_written_content_to_bd(clb: CallbackQue
             text='Пришлите контент для задания 📎')
 
     elif answer == 'continue':
+        await bot.delete_message(
+            chat_id=clb.message.chat.id,
+            message_id=clb.message.message_id
+        )
         # если контент не будут добавлять, только текст, то будет ошибка
         data_executed_dz = await state.get_data()
         logging.info(data_executed_dz)

@@ -36,11 +36,16 @@ async def process_check_dz_step1(clb: CallbackQuery, bot: Bot):
         )
         return
     else:
+        try:
+            await bot.delete_message(chat_id=clb.message.chat.id, message_id=clb.message.message_id)
+        except:
+            pass
         data_executed_dz = await rq.get_dz_to_executed() # этот метод возвращает список строк таблицы Relation
         logging.info(f"data_executed_dz = {data_executed_dz}")
 
         one_executed_dz = data_executed_dz[0] # это одна строка из таблицы Relation
         if one_executed_dz.comment_to_execute_dz: # если есть comment_to_execute_dz в таблице Relation
+            logging.info(f"one_executed_dz.comment_to_execute_dz = {one_executed_dz.comment_to_execute_dz}")
             comment_to_execute_dz = one_executed_dz.comment_to_execute_dz
             list_comment_to_execute_dz = comment_to_execute_dz.split(',!?!,')
             for item in list_comment_to_execute_dz:
@@ -51,6 +56,7 @@ async def process_check_dz_step1(clb: CallbackQuery, bot: Bot):
                     await bot.send_message(chat_id=tg_id, text=item)
 
         if one_executed_dz.executed_dz: # Если есть строка (контент) в колонке executed_dz
+            logging.info(f"one_executed_dz.executed_dz = {one_executed_dz.executed_dz}")
             execeted_dz = one_executed_dz.executed_dz
             list_executed_dz = execeted_dz.split(',')
             for item in list_executed_dz:

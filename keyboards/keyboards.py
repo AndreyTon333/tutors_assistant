@@ -177,6 +177,7 @@ def kb_delete_learner_after_confirm(postfix: str) -> InlineKeyboardMarkup:
 async def kb_choise_name_dz(prefix, list_dz, back: int, forward: int, count: int, chapter: str | None=None):
     """Клавиатура для выбора названия ДЗ для различных действий"""
     logging.info('kb_choise_name_dz')
+    tg_id = list_dz[0].tg_id
     # проверка чтобы не ушли в минус
     if back < 0:
         back = 0
@@ -194,8 +195,19 @@ async def kb_choise_name_dz(prefix, list_dz, back: int, forward: int, count: int
         back = forward - 2
     kb_builder = InlineKeyboardBuilder()
     buttons = []
+    list_not_executed_dz = [dz for dz in await rq.get_dz_from_learner(tg_id_learner=tg_id) if not dz.executed_dz]
+    name_not_executed_dz: list =[]
+    for not_ex_dz in list_not_executed_dz:
+        name_not_executed_dz.append(not_ex_dz.name_dz)
     for dz in list_dz[back*count:(forward-1)*count]:# прохожу по списку и беру id_dz
-        text = dz.name_dz
+        if prefix == 'moi_dz':
+            #list_not_executed_dz = [dz for dz in await rq.get_dz_from_learner(tg_id_learner=dz.tg_id) if not dz.executed_dz]
+            if dz.name_dz not in name_not_executed_dz:
+                text = f"{dz.name_dz} ✅" # к названию ДЗ добавить иконку ✅, если выполнено и ❌, если не выполнено
+            else:
+                text = f"{dz.name_dz} ❌"
+        else:
+            text = dz.name_dz
 
         # когда эта функция применяется в хэндреле learner_handler, нужен id_dz из таблицы RelationLearnerContent
         if prefix in ['moi_dz', 'choise_not_executed_dz']:

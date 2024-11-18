@@ -23,12 +23,26 @@ import asyncio
 
 
 @router.message(F.text == 'Ученики')
-async def process_learner(message:Message, bot: Bot):
+async def process_learner(message:Message, bot: Bot, state: FSMContext):
     """Срабатывает на reply кнопку 'Ученики'"""
     logging.info('process_learner')
 
-    await bot.delete_message(chat_id=message.chat.id,
-                             message_id=message.message_id) ### почему не удалилось сообщение "Ученики"?
+    if 'hello_message' not in (await state.get_data()):
+        try:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
+        except:
+            pass
+    else:
+        await state.clear()
+    #await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id-1)
+   # await bot.send_message(
+   #     chat_id=message.chat.id,
+   #     text='Приветствую Вас!\nВы являетесь администратором проекта!',
+   #     reply_markup=kb.kb_admin_dz_lrn())
+    try:
+        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    except:
+        pass
     await message.answer(text='Добавить или удалить ученика',
                          reply_markup=await kb.kb_add_and_del_learner())
 

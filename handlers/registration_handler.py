@@ -32,12 +32,16 @@ async def process_start_command(message: Message,  state: FSMContext, bot: Bot) 
 
     #делаем проверку на администратора, если ДА, запускаем функцию 'hello_admin'
     if await check_super_admin(tg_id=tg_id):
-        await process_hello_admin(message=message, state=state, bot=bot)
+        await bot.send_message(
+            chat_id=message.chat.id,
+            text='Приветствую Вас!\nВы являетесь администратором проекта!',
+            reply_markup=kb.kb_admin_dz_lrn())
+        await state.update_data(hello_message='Приветствую')
         return
 
     # Пользователь верифицирован? Он есть в БД
     if await rq.is_learner_in_database(tg_id=tg_id):
-        await process_begin_without_state(message=message)
+        await process_begin_without_state(message=message, state=state)
     else:
         await message.answer(
             text='Пришлите мне токен, который вы получили от администратора проекта'
@@ -52,6 +56,10 @@ async def process_check_token(message: Message, state: FSMContext, bot:Bot) -> N
     logging.info('process_check_token')
 
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    try:
+        await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
+    except:
+        pass
 
     token = message.text # ловим токен от пользователя
     if await rq.is_token_valid(token=token): # есть ли этот токен в БД и не использовали ли его при регистрации?
@@ -88,10 +96,14 @@ async def process_given_fio(clb: CallbackQuery, state: FSMContext):
 
 
 @router.message(Registration.state_fio)
-async def process_begin_state_fio(message: Message, state: FSMContext) -> None:
+async def process_begin_state_fio(message: Message, bot: Bot, state: FSMContext) -> None:
     """Стартовая функция ученика при входе, если есть не было регистрации и пришли через state_fio"""
     logging.info("process_begin_state_fio")
-
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    try:
+        await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
+    except:
+        pass
     # ещё раз надо проверить валидность токена, вдруг пока регистрировался его заняли
     data_registration = await state.get_data()
     fio = message.text
@@ -120,9 +132,10 @@ async def process_begin_state_fio(message: Message, state: FSMContext) -> None:
 
 
 
-async def process_begin_without_state(message: Message):
+async def process_begin_without_state(message: Message, state: FSMContext):
     """Стартовая функция ученика при входе, если есть регистрация"""
     logging.info("process_begin_without_state")
+
 
     keyboard = kb.kb_learner_begin()
     await message.answer(
@@ -130,3 +143,4 @@ async def process_begin_without_state(message: Message):
         f'а также посмотреть ваши ДЗ и комментарии к ним от репетитора.',
         reply_markup=keyboard
     )
+    await state.update_data(first_message='first_message')
