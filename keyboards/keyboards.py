@@ -174,10 +174,10 @@ def kb_delete_learner_after_confirm(postfix: str) -> InlineKeyboardMarkup:
     return keyboard
 
 
-async def kb_choise_name_dz(prefix, list_dz, back: int, forward: int, count: int, chapter: str | None=None):
+async def kb_choise_name_dz(prefix, list_dz, back: int, forward: int, count: int, tg_id: int |None=None, chapter: str | None=None):
     """Клавиатура для выбора названия ДЗ для различных действий"""
     logging.info('kb_choise_name_dz')
-    tg_id = list_dz[0].tg_id
+    tg_id = tg_id
     # проверка чтобы не ушли в минус
     if back < 0:
         back = 0

@@ -24,8 +24,8 @@ class LearnerFSM(StatesGroup):
 async def process_press_button_moi_dz(message:Message, bot:Bot, state: FSMContext):
     """Срабатывает на reply кнопку 'Мои ДЗ'"""
     logging.info('process_press_button_moi_dz')
-
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    tg_id = message.chat.id
+    await bot.delete_message(chat_id=tg_id, message_id=message.message_id)
 
     if 'first_message' not in await state.get_data():
         try:
@@ -43,6 +43,7 @@ async def process_press_button_moi_dz(message:Message, bot:Bot, state: FSMContex
     keyboard = await kb.kb_choise_name_dz(
         prefix='moi_dz',
         list_dz=list_dz,
+        tg_id=tg_id,
         back=0,
         forward=2,
         count=6,
