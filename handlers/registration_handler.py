@@ -9,6 +9,7 @@ from aiogram.types import ReplyKeyboardRemove
 
 from handlers.handler_add_dz import process_hello_admin
 from filter.filter import check_super_admin
+from config_data.config import Config, load_config
 
 import keyboards.keyboards as kb
 import database.requests as rq
@@ -120,8 +121,16 @@ async def process_begin_state_fio(message: Message, bot: Bot, state: FSMContext)
             f'а также посмотреть ваши ДЗ и комментарии к ним от репетитора.',
             reply_markup=keyboard
 
-    )
+        )
+        config: Config = load_config()
+        id_admin = config.tg_bot.admin_ids
+        await bot.send_message(
+            chat_id=id_admin,
+            text=f'Ученик {fio} зарегистрировался в боте'
+        )
         await state.clear()
+        await state.update_data(first_message='first_message')
+        logging.info(f"await state.get_data() = {await state.get_data()}")
     else:
         await message.answer(
             text='Токен не прошел проверку, запросите новый токен у Администратора'
@@ -144,3 +153,4 @@ async def process_begin_without_state(message: Message, state: FSMContext):
         reply_markup=keyboard
     )
     await state.update_data(first_message='first_message')
+    logging.info(f"await state.get_data() = {await state.get_data()}")

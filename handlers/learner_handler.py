@@ -26,7 +26,7 @@ async def process_press_button_moi_dz(message:Message, bot:Bot, state: FSMContex
     logging.info('process_press_button_moi_dz')
     tg_id = message.chat.id
     await bot.delete_message(chat_id=tg_id, message_id=message.message_id)
-
+    logging.info(f'await state.get_data() = {await state.get_data()}')
     if 'first_message' not in await state.get_data():
         try:
             await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
@@ -76,6 +76,7 @@ async def process_forward_choise_name_dz_from_learner(clb: CallbackQuery) -> Non
         prefix=f'moi_dz',
         #chapter=chapter,
         list_dz=list_dz,
+        tg_id=tg_id,
         back=back,
         forward=forward,
         count=6
@@ -110,6 +111,7 @@ async def process_back_choise_name_dz_from_learner(clb: CallbackQuery) -> None:
         prefix=f'moi_dz',
         #chapter=chapter,
         list_dz=list_dz,
+        tg_id=tg_id,
         back=back,
         forward=forward,
         count=6
@@ -255,7 +257,7 @@ async def process_press_button_send_dz(message:Message, bot:Bot, state: FSMConte
     logging.info('process_press_button_send_dz')
 
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-
+    logging.info(f"await state.get_data() = {await state.get_data()}")
     if 'first_message' not in await state.get_data():
         try:
             await bot.delete_message(chat_id=message.chat.id,message_id=message.message_id-1)
