@@ -222,7 +222,7 @@ async def process_add_dz_written_content_to_bd(clb: CallbackQuery, state: FSMCon
             del dict_content['count']
 
         await rq.add_content(dict_content)
-        #logging.info(f"--- await state.get_data() = {await state.get_data()} ---- dict_content = {dict_content}")
+        logging.info(f"--- await state.get_data() = {await state.get_data()} ---- dict_content = {dict_content}")
 
 
         #await asyncio.sleep(3)

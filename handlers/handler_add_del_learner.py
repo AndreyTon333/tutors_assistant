@@ -172,4 +172,8 @@ async def process_descriptiondel_learner(clb: CallbackQuery, bot: Bot, state: FS
         text=f'Ученик {fio} успешно удален',
         show_alert=True
     )
-    await process_hello_admin(message=clb.message, state=state, bot=bot)
+    await bot.delete_message(
+        chat_id=clb.message.chat.id,
+        message_id=clb.message.message_id
+    )
+    #await process_hello_admin(message=clb.message, state=state, bot=bot)

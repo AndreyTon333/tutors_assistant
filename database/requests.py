@@ -129,7 +129,7 @@ async def get_count_executed_dz()-> int:
         list_dz = [row for row in data_dz]
         count_dz_to_check: int = 0
         for elem in list_dz:
-            if (elem.executed_dz != '' or elem.comment_executed_dz != '') and elem.checked_dz == '':
+            if (elem.executed_dz != '' or elem.comment_executed_dz != '') and (elem.checked_dz == '' and elem.comment_checked_dz == ''):
                 #logging.info(f" elem.executed_dz = {elem.executed_dz} --- elem.comment_executed_dz = {elem.comment_executed_dz} --- elem.checked_dz = {elem.checked_dz}")
                 count_dz_to_check += 1
                 #logging.info(f" count_dz_to_check {count_dz_to_check}")

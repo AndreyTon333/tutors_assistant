@@ -92,7 +92,16 @@ async def process_check_dz_all_right_dz(clb: CallbackQuery, bot: Bot):
                                     attribute = 'checked_dz',
                                     set_attribute = 'Всё верно'
                                     )
-
+    # отправка ученику сообщения, что его ДЗ проверено, замечаний нет
+    data_relation =await rq.get_data_relation_from_id(id=id_relation)
+    logging.info(data_relation)
+    tg_id_lerner =data_relation.tg_id
+    name_dz = data_relation.name_dz
+    logging.info(f"tg_id_lerner = {tg_id_lerner} --- name_dz = {name_dz}")
+    await bot.send_message(
+        chat_id=tg_id_lerner,
+        text=f'Учитель проверил ваше домашнее задание "{name_dz}". Всё выполнено верно.'
+    )
     await process_check_dz_step1(clb=clb, bot=bot)
     await clb.answer()
 
@@ -179,12 +188,13 @@ async def process_check_dz_last_step(clb: CallbackQuery, state: State, bot:Bot) 
         await clb.message.edit_text(
             text='Пришлите контент для задания 📎')
 
-    elif clb.data == 'check_next_dz':
+    if clb.data == 'check_next_dz':
         data_checked_dz = await state.get_data()
         logging.info(data_checked_dz)
 
         str_checked_dz: str = ''
         if 'comment_checked_dz' in data_checked_dz or 'checked_dz' in data_checked_dz:
+
             if 'checked_dz' in data_checked_dz:
                 data_list_checked_dz = (await state.get_data())['checked_dz']
                 str_checked_dz = ','.join(data_list_checked_dz)
@@ -213,6 +223,7 @@ async def process_check_dz_last_step(clb: CallbackQuery, state: State, bot:Bot) 
             await state.clear()
 
         else:
+            logging.info('else')
             await clb.message.answer(
                 text='Добавте контент к домашнему заданию'
             )

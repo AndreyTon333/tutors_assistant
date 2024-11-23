@@ -129,7 +129,7 @@ async def process_begin_state_fio(message: Message, bot: Bot, state: FSMContext)
             text=f'Ученик {fio} зарегистрировался в боте'
         )
         await state.clear()
-        await state.update_data(first_message='first_message')
+        await state.update_data(first_message='first_message')# это надо для условия удаления сообщений вдальнейшим
         logging.info(f"await state.get_data() = {await state.get_data()}")
     else:
         await message.answer(
