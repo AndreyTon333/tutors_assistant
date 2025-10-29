@@ -25,16 +25,12 @@ async def main():
 
     logging.basicConfig(
         level=logging.INFO,
-        filename="py_log.log",
-        filemode='w',
+        filename="py_log.log",  # закомментировать при отладке
+        filemode='w',           # закомментировать при отладке
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s')
 
-
-
-
     logger.info('Starting bot')
-
 
     config: Config = load_config()
 
