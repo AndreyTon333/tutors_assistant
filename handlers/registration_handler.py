@@ -56,6 +56,8 @@ async def process_start_command(message: Message,  state: FSMContext, bot: Bot) 
     #     )
     #     await state.set_state(state=Registration.state_token)
 
+
+# временная функция для теста
 @router.callback_query(F.data.endswith('_test'))
 async def process_admin_test(clb: CallbackQuery, bot: Bot, state: FSMContext):
     logging.info('process_admin_test')
